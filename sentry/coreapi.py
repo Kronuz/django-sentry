@@ -175,8 +175,6 @@ def insert_data_to_database(data):
                 logger.exception('Failed reading timestamp')
                 del data['timestamp']
     if 'timestamp' in data:
-        if timezone.is_naive(data['timestamp']):
-            timezone.make_aware(data['timestamp'], timezone.utc)
         process_data_timestamp(data)
 
     try:

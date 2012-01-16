@@ -240,6 +240,9 @@ class GroupManager(models.Manager, ChartMixin):
         extra = kwargs.pop('extra', None)
         modules = kwargs.pop('modules', None)
 
+        if timezone.is_naive(date):
+            timezone.make_aware(date, timezone.utc)
+
         if not message:
             raise InvalidData('Missing required parameter: message')
 
