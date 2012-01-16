@@ -10,6 +10,7 @@ import base64
 import logging
 import time
 import zlib
+import dateutil
 
 from django.utils.encoding import smart_str
 
@@ -18,6 +19,7 @@ from sentry.exceptions import InvalidData, InvalidInterface
 from sentry.models import Group, ProjectMember
 from sentry.utils import is_float, json
 from sentry.utils.auth import get_signature, parse_auth_header
+from sentry.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -167,19 +169,14 @@ def insert_data_to_database(data):
                 logger.exception('Failed reading timestamp')
                 del data['timestamp']
         elif not isinstance(data['timestamp'], datetime):
-            if '.' in data['timestamp']:
-                format = '%Y-%m-%dT%H:%M:%S.%f'
-            else:
-                format = '%Y-%m-%dT%H:%M:%S'
-            if 'Z' in data['timestamp']:
-                # support UTC market, but not other timestamps
-                format += 'Z'
             try:
-                data['timestamp'] = datetime.strptime(data['timestamp'], format)
+                data['timestamp'] = dateutil.parser.parse(data['timestamp'])
             except:
                 logger.exception('Failed reading timestamp')
                 del data['timestamp']
     if 'timestamp' in data:
+        if timezone.is_naive(data['timestamp']):
+            timezone.make_aware(data['timestamp'], timezone.utc)
         process_data_timestamp(data)
 
     try:

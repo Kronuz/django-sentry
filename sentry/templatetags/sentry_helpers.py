@@ -6,9 +6,10 @@ from django.template.defaultfilters import stringfilter, escape
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
+
 from paging.helpers import paginate as paginate_func
 from sentry.conf import settings
-from sentry.utils import json
+from sentry.utils import json, timezone
 from templatetag_sugar.register import tag
 from templatetag_sugar.parser import Name, Variable, Constant, Optional
 
@@ -166,7 +167,7 @@ def timesince(value):
     from django.template.defaultfilters import timesince
     if not value:
         return _('Never')
-    if value < datetime.datetime.utcnow() - datetime.timedelta(days=5):
+    if value < timezone.now() - datetime.timedelta(days=5):
         return value.date()
     value = (' '.join(timesince(value).split(' ')[0:2])).strip(',')
     if value == _('0 minutes'):

@@ -18,7 +18,7 @@ class BetterJSONEncoder(DjangoJSONEncoder):
         if isinstance(obj, uuid.UUID):
             return obj.hex
         elif isinstance(obj, datetime.datetime):
-            return obj.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+            return obj.strftime('%Y-%m-%dT%H:%M:%S.%f%Z')
         elif isinstance(obj, (set, frozenset)):
             return list(obj)
         return super(BetterJSONEncoder, self).default(obj)

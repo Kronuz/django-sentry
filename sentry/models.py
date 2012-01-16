@@ -12,7 +12,6 @@ import logging
 import math
 import time
 import uuid
-from datetime import datetime
 from indexer.models import BaseIndex
 
 
@@ -29,7 +28,8 @@ from sentry.conf import settings
 from sentry.manager import GroupManager, ProjectManager, \
   MetaManager, InstanceMetaManager
 from sentry.utils import cached_property, \
-                         MockDjangoRequest
+                         MockDjangoRequest, \
+                         timezone
 from sentry.utils.models import Model, GzippedDictField
 from sentry.templatetags.sentry_helpers import truncatechars
 import sentry.processors.base
@@ -82,7 +82,7 @@ class Project(Model):
     name = models.CharField(max_length=200)
     owner = models.ForeignKey(User, related_name="owned_project_set", null=True)
     public = models.BooleanField(default=False)
-    date_added = models.DateTimeField(default=datetime.now)
+    date_added = models.DateTimeField(default=timezone.now)
     status = models.PositiveIntegerField(default=0, choices=(
         (0, 'Visible'),
         (1, 'Hidden'),
@@ -182,7 +182,7 @@ class ProjectMember(Model):
     public_key = models.CharField(max_length=32, unique=True, null=True)
     secret_key = models.CharField(max_length=32, unique=True, null=True)
     type = models.IntegerField(choices=MEMBER_TYPES, default=MEMBER_OWNER)
-    date_added = models.DateTimeField(default=datetime.now)
+    date_added = models.DateTimeField(default=timezone.now)
 
     class Meta:
         unique_together = (('project', 'user'),)
@@ -261,8 +261,8 @@ class Group(MessageBase):
     # if view is null it means its from the global aggregate
     status = models.PositiveIntegerField(default=0, choices=STATUS_LEVELS, db_index=True)
     times_seen = models.PositiveIntegerField(default=1, db_index=True)
-    last_seen = models.DateTimeField(default=datetime.now, db_index=True)
-    first_seen = models.DateTimeField(default=datetime.now, db_index=True)
+    last_seen = models.DateTimeField(default=timezone.now, db_index=True)
+    first_seen = models.DateTimeField(default=timezone.now, db_index=True)
     time_spent_total = models.FloatField(default=0)
     time_spent_count = models.IntegerField(default=0)
     score = models.IntegerField(default=0)
@@ -406,7 +406,7 @@ class Event(MessageBase):
     """
     group = models.ForeignKey(Group, blank=True, null=True, related_name="event_set")
     event_id = models.CharField(max_length=32, null=True, unique=True, db_column="message_id")
-    datetime = models.DateTimeField(default=datetime.now, db_index=True)
+    datetime = models.DateTimeField(default=timezone.now, db_index=True)
     time_spent = models.FloatField(null=True)
     server_name = models.CharField(max_length=128, db_index=True, null=True)
     site = models.CharField(max_length=128, db_index=True, null=True)

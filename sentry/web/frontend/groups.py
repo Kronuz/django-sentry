@@ -6,7 +6,6 @@ sentry.web.frontend.groups
 :license: BSD, see LICENSE for more details.
 """
 
-import datetime
 import re
 
 from django.core.urlresolvers import reverse
@@ -19,7 +18,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from sentry.filters import Filter
 from sentry.models import Group, Event, View
-from sentry.utils import json, has_trending
+from sentry.utils import json, has_trending, timezone
 from sentry.web.decorators import has_access, login_required
 from sentry.web.helpers import render_to_response
 
@@ -185,7 +184,7 @@ def group_list(request, project, view_id=None):
         sort = DEFAULT_SORT_OPTION
     sort_label = _get_sort_label(sort)
 
-    today = datetime.datetime.utcnow()
+    today = timezone.now()
 
     has_realtime = page == 1
 

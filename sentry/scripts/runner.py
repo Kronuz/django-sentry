@@ -7,7 +7,6 @@ sentry.scripts.runner
 :license: BSD, see LICENSE for more details.
 """
 import base64
-import datetime
 import errno
 import imp
 import os
@@ -15,9 +14,10 @@ import os.path
 import sys
 
 from django.conf import settings as django_settings
+
 from optparse import OptionParser
 from sentry import VERSION, environment, commands
-
+from sentry.utils import timezone
 
 ALL_COMMANDS = (
     # General use commands
@@ -159,7 +159,7 @@ def main():
         raise ValueError("Configuration file does not exist. Use 'init' to initialize the file.")
 
     environment['config'] = config_path
-    environment['start_date'] = datetime.datetime.utcnow()
+    environment['start_date'] = timezone.now()
 
     settings_from_file(config_path)
 

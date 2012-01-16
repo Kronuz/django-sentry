@@ -21,6 +21,7 @@ from sentry.signals import regression_signal
 from sentry.utils import get_db_engine, should_mail
 from sentry.utils.charts import has_charts
 from sentry.utils.compat.db import connections
+from sentry.utils import timezone
 
 logger = logging.getLogger('sentry.errors')
 
@@ -110,7 +111,7 @@ class ChartMixin(object):
             return []
 
         hours = max_days * 24
-        today = datetime.datetime.utcnow().replace(microsecond=0, second=0, minute=0)
+        today = timezone.now().replace(microsecond=0, second=0, minute=0)
         min_date = today - datetime.timedelta(hours=hours)
 
         method = self._get_date_trunc('date', db)
@@ -235,7 +236,7 @@ class GroupManager(models.Manager, ChartMixin):
         logger_name = kwargs.pop('logger', 'root')
         server_name = kwargs.pop('server_name', None)
         site = kwargs.pop('site', None)
-        date = kwargs.pop('timestamp', None) or datetime.datetime.utcnow()
+        date = kwargs.pop('timestamp', None) or timezone.now()
         extra = kwargs.pop('extra', None)
         modules = kwargs.pop('modules', None)
 

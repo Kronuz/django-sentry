@@ -5,7 +5,6 @@ sentry.web.frontend.events
 :copyright: (c) 2010 by the Sentry Team, see AUTHORS for more details.
 :license: BSD, see LICENSE for more details.
 """
-import datetime
 import urllib
 
 from django.core.context_processors import csrf
@@ -19,6 +18,7 @@ from sentry.filters import Filter
 from sentry.replays import Replayer
 from sentry.web.decorators import login_required, has_access, render_to_response
 from sentry.web.forms import ReplayForm
+from sentry.utils import timezone
 
 
 @login_required
@@ -44,7 +44,7 @@ def event_list(request, project):
     offset = (page - 1) * settings.MESSAGES_PER_PAGE
     limit = page * settings.MESSAGES_PER_PAGE
 
-    today = datetime.datetime.utcnow()
+    today = timezone.now()
 
     has_realtime = False
 
